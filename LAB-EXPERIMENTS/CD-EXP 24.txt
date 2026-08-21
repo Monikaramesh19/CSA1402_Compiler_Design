@@ -1,0 +1,63 @@
+%{
+#include <stdio.h>
+
+int comment_count = 0;
+FILE *out;
+%}
+
+%x COMMENT
+
+%%
+"//".*                  {
+                            comment_count++;
+                        }
+
+"/*"                    {
+                            comment_count++;
+                            BEGIN(COMMENT);
+                        }
+
+<COMMENT>"*/"           {
+                            BEGIN(INITIAL);
+                        }
+
+<COMMENT>\n             {
+                            fputc('\n', out);
+                        }
+
+<COMMENT>.              ;
+
+\n                      {
+                            fputc('\n', out);
+                        }
+
+.                       {
+                            fputc(yytext[0], out);
+                        }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    out = fopen("output.c", "w");
+
+    if (out == NULL)
+    {
+        printf("Cannot create output file.\n");
+        return 1;
+    }
+
+    yylex();
+
+    fclose(out);
+
+    printf("Number of comment lines/comments removed: %d\n", comment_count);
+    printf("Comments removed successfully.\n");
+    printf("Output written to output.c\n");
+
+    return 0;
+}

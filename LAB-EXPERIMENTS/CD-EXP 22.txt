@@ -1,0 +1,21 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+"<"[^>]+">"    { printf("HTML Tag: %s\n", yytext); }
+[ \t\n]+       ;
+.              ;
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("----- HTML TAGS -----\n");
+    yylex();
+    return 0;
+}

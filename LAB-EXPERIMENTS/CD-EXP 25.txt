@@ -1,0 +1,25 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+[A-Z]+      {
+                printf("Capital Word: %s\n", yytext);
+            }
+
+[ \t\n]+    ;
+
+.           ;
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("----- CAPITAL WORDS -----\n");
+    yylex();
+    return 0;
+}

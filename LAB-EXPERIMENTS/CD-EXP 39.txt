@@ -1,0 +1,42 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+char oldWord[50];
+char newWord[50];
+%}
+
+%%
+[a-zA-Z]+ {
+              if (strcmp(yytext, oldWord) == 0)
+                  printf("%s", newWord);
+              else
+                  printf("%s", yytext);
+           }
+
+\n         { printf("\n"); }
+
+.          { printf("%s", yytext); }
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    printf("Enter word to replace: ");
+    scanf("%s", oldWord);
+
+    printf("Enter new word: ");
+    scanf("%s", newWord);
+
+    getchar();
+
+    printf("\nEnter the text:\n");
+
+    yylex();
+
+    return 0;
+}
