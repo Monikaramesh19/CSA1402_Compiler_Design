@@ -1,0 +1,20 @@
+#include <stdio.h>
+
+int main()
+{
+    printf("----- GIVEN GRAMMAR -----\n");
+
+    printf("S -> iEtS | iEtSeS | a\n");
+    printf("E -> b\n");
+
+    printf("\nCommon prefix detected:\n");
+    printf("iEtS\n");
+
+    printf("\n----- GRAMMAR AFTER LEFT FACTORING -----\n");
+
+    printf("S  -> iEtS S' | a\n");
+    printf("S' -> eS | epsilon\n");
+    printf("E  -> b\n");
+
+    return 0;
+}

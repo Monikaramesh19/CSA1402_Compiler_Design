@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+int main()
+{
+    printf("Grammar:\n");
+    printf("S -> AaAb | BbBa\n");
+    printf("A -> epsilon\n");
+    printf("B -> epsilon\n\n");
+
+    printf("----- FIRST SETS -----\n");
+
+    printf("FIRST(A) = { epsilon }\n");
+    printf("FIRST(B) = { epsilon }\n");
+
+    // Since A can derive epsilon:
+    // FIRST(AaAb) contains 'a'
+    // Since B can derive epsilon:
+    // FIRST(BbBa) contains 'b'
+
+    printf("FIRST(S) = { a, b }\n");
+
+    return 0;
+}

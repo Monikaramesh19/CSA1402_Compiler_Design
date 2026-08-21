@@ -1,0 +1,190 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int isKeyword(char word[])
+{
+    char keywords[][10] = {
+        "int", "float", "char", "double",
+        "if", "else", "for", "while",
+        "return", "void", "break", "continue"
+    };
+
+    int n = sizeof(keywords) / sizeof(keywords[0]);
+
+    for (int i = 0; i < n; i++)
+    {
+        if (strcmp(word, keywords[i]) == 0)
+            return 1;
+    }
+
+    return 0;
+}
+
+int main()
+{
+    FILE *fp;
+    char filename[100];
+    char ch, next;
+    char word[100];
+    int i;
+
+    printf("Enter input file name: ");
+    scanf("%s", filename);
+
+    fp = fopen(filename, "r");
+
+    if (fp == NULL)
+    {
+        printf("Error: File cannot be opened.\n");
+        return 1;
+    }
+
+    printf("\n----- LEXICAL ANALYZER OUTPUT -----\n\n");
+
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        /* Ignore spaces, tabs and new lines */
+        if (isspace(ch))
+        {
+            continue;
+        }
+
+        /* Check for comments */
+        if (ch == '/')
+        {
+            next = fgetc(fp);
+
+            /* Single-line comment */
+            if (next == '/')
+            {
+                while ((ch = fgetc(fp)) != '\n' && ch != EOF)
+                    ;
+
+                continue;
+            }
+
+            /* Multi-line comment */
+            else if (next == '*')
+            {
+                char previous = 0;
+
+                while ((ch = fgetc(fp)) != EOF)
+                {
+                    if (previous == '*' && ch == '/')
+                        break;
+
+                    previous = ch;
+                }
+
+                continue;
+            }
+
+            /* Division operator */
+            else
+            {
+                printf("Operator   : /\n");
+
+                if (next != EOF)
+                    ungetc(next, fp);
+
+                continue;
+            }
+        }
+
+        /* Identify keywords and identifiers */
+        if (isalpha(ch) || ch == '_')
+        {
+            i = 0;
+
+            word[i++] = ch;
+
+            while ((ch = fgetc(fp)) != EOF &&
+                   (isalnum(ch) || ch == '_'))
+            {
+                word[i++] = ch;
+            }
+
+            word[i] = '\0';
+
+            if (ch != EOF)
+                ungetc(ch, fp);
+
+            if (isKeyword(word))
+                printf("Keyword    : %s\n", word);
+            else
+                printf("Identifier : %s\n", word);
+
+            continue;
+        }
+
+        /* Identify constants */
+        if (isdigit(ch))
+        {
+            i = 0;
+
+            word[i++] = ch;
+
+            while ((ch = fgetc(fp)) != EOF &&
+                   (isdigit(ch) || ch == '.'))
+            {
+                word[i++] = ch;
+            }
+
+            word[i] = '\0';
+
+            if (ch != EOF)
+                ungetc(ch, fp);
+
+            printf("Constant   : %s\n", word);
+
+            continue;
+        }
+
+        /* Identify operators */
+        if (ch == '+' || ch == '-' ||
+            ch == '*' || ch == '%' ||
+            ch == '=' || ch == '<' ||
+            ch == '>' || ch == '!')
+        {
+            next = fgetc(fp);
+
+            if ((ch == '+' && next == '+') ||
+                (ch == '-' && next == '-') ||
+                (ch == '=' && next == '=') ||
+                (ch == '!' && next == '=') ||
+                (ch == '<' && next == '=') ||
+                (ch == '>' && next == '='))
+            {
+                printf("Operator   : %c%c\n", ch, next);
+            }
+            else
+            {
+                printf("Operator   : %c\n", ch);
+
+                if (next != EOF)
+                    ungetc(next, fp);
+            }
+
+            continue;
+        }
+
+        /* Identify separators */
+        if (ch == '(' || ch == ')' ||
+            ch == '{' || ch == '}' ||
+            ch == '[' || ch == ']' ||
+            ch == ';' || ch == ',')
+        {
+            printf("Separator  : %c\n", ch);
+            continue;
+        }
+
+        /* Ignore unknown characters */
+    }
+
+    fclose(fp);
+
+    printf("\n----- END OF LEXICAL ANALYSIS -----\n");
+
+    return 0;
+}

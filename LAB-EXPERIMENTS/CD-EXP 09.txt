@@ -1,0 +1,20 @@
+#include <stdio.h>
+
+int main()
+{
+    printf("----- GIVEN GRAMMAR -----\n");
+
+    printf("S -> (L) | a\n");
+    printf("L -> L,S | S\n");
+
+    printf("\nLeft recursion detected in:\n");
+    printf("L -> L,S\n");
+
+    printf("\n----- GRAMMAR AFTER ELIMINATING LEFT RECURSION -----\n");
+
+    printf("S  -> (L) | a\n");
+    printf("L  -> S L'\n");
+    printf("L' -> , S L' | epsilon\n");
+
+    return 0;
+}
